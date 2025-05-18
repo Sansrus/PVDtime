@@ -1,0 +1,72 @@
+[22:37:51] [main/INFO] (FabricLoader/GameProvider) Loading Minecraft 1.21.1 with Fabric Loader 0.16.0
+[22:37:52] [main/INFO] (FabricLoader) Loading 44 mods:
+	- fabric-api 0.115.0+1.21.1
+	- fabric-api-base 0.4.42+6573ed8c19
+	- fabric-api-lookup-api-v1 1.6.70+b559734419
+	- fabric-biome-api-v1 13.0.31+d527f9fd19
+	- fabric-block-api-v1 1.0.22+0af3f5a719
+	- fabric-block-view-api-v2 1.0.10+6573ed8c19
+	- fabric-command-api-v1 1.2.49+f71b366f19
+	- fabric-command-api-v2 2.2.28+6ced4dd919
+	- fabric-commands-v0 0.2.66+df3654b319
+	- fabric-content-registries-v0 8.0.18+b559734419
+	- fabric-convention-tags-v1 2.1.2+7f945d5b19
+	- fabric-convention-tags-v2 2.9.2+e60e56d419
+	- fabric-crash-report-info-v1 0.2.29+0af3f5a719
+	- fabric-data-attachment-api-v1 1.4.1+9ed317f519
+	- fabric-data-generation-api-v1 20.2.25+16c4ae2519
+	- fabric-dimensions-v1 4.0.0+6fc22b9919
+	- fabric-entity-events-v1 1.7.0+2122d82819
+	- fabric-events-interaction-v0 0.7.13+ba9dae0619
+	- fabric-game-rule-api-v1 1.0.53+6ced4dd919
+	- fabric-gametest-api-v1 2.0.5+6fc22b9919
+	- fabric-item-api-v1 11.1.1+d5debaed19
+	- fabric-item-group-api-v1 4.1.6+6823f7cd19
+	- fabric-language-kotlin 1.10.0+kotlin.1.9.0
+	- fabric-lifecycle-events-v1 2.5.0+01d9a51c19
+	- fabric-loot-api-v2 3.0.15+3f89f5a519
+	- fabric-loot-api-v3 1.0.3+3f89f5a519
+	- fabric-message-api-v1 6.0.13+6573ed8c19
+	- fabric-networking-api-v1 4.3.0+c7469b2119
+	- fabric-object-builder-api-v1 15.2.1+40875a9319
+	- fabric-particles-v1 4.0.2+6573ed8c19
+	- fabric-recipe-api-v1 5.0.14+248df81c19
+	- fabric-registry-sync-v0 5.2.0+34f5d91419
+	- fabric-rendering-data-attachment-v1 0.3.48+73761d2e19
+	- fabric-rendering-fluids-v1 3.1.6+1daea21519
+	- fabric-resource-conditions-api-v1 4.3.0+8dc279b119
+	- fabric-resource-loader-v0 1.3.1+5b5275af19
+	- fabric-screen-handler-api-v1 1.3.88+b559734419
+	- fabric-transfer-api-v1 5.4.2+c24bd99419
+	- fabric-transitive-access-wideners-v1 6.2.0+45b9699719
+	- fabricloader 0.16.0
+	- java 21
+	- minecraft 1.21.1
+	- mixinextras 0.4.0
+	- pvdtime 1.0.4
+[22:37:52] [main/INFO] (FabricLoader/Mixin) SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/C:/Users/ms928/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.15.0+mixin.0.8.7/2ce1c5d57a061f3e259ec30b8b0cb2dc889c5156/sponge-mixin-0.15.0+mixin.0.8.7.jar Service=Knot/Fabric Env=SERVER
+[22:37:52] [main/INFO] (FabricLoader/Mixin) Loaded Fabric development mappings for mixin remapper!
+[22:37:52] [main/INFO] (FabricLoader/Mixin) Compatibility level set to JAVA_17
+[22:37:53] [main/INFO] (FabricLoader/MixinExtras|Service) Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.4.0).
+[22:38:07] [main/INFO] (Minecraft) Environment: Environment[sessionHost=https://sessionserver.mojang.com, servicesHost=https://api.minecraftservices.com, name=PROD]
+[22:38:10] [main/INFO] (Minecraft) Loaded 1290 recipes
+[22:38:10] [main/INFO] (Minecraft) Loaded 1399 advancements
+[22:38:11] [main/INFO] (BiomeModificationImpl) Applied 0 biome modifications to 0 of 64 new biomes in 3.226 ms
+[22:38:11] [Server thread/INFO] (Minecraft) Starting minecraft server version 1.21.1
+[22:38:11] [Server thread/INFO] (Minecraft) Loading properties
+[22:38:11] [Server thread/INFO] (Minecraft) Default game type: SURVIVAL
+[22:38:11] [Server thread/INFO] (Minecraft) Generating keypair
+[22:38:11] [Server thread/INFO] (Minecraft) Starting Minecraft server on *:25565
+[22:38:12] [Server thread/INFO] (Minecraft) Using default channel type
+[22:38:12] [Server thread/INFO] (Minecraft) Preparing level "world"
+[22:38:13] [Server thread/INFO] (Minecraft) Preparing start region for dimension minecraft:overworld
+[22:38:14] [Worker-Main-1/INFO] (Minecraft) Preparing spawn area: 0%
+[22:38:14] [Worker-Main-1/INFO] (Minecraft) Preparing spawn area: 0%
+[22:38:14] [Server thread/INFO] (Minecraft) Time elapsed: 964 ms
+[22:38:14] [Server thread/INFO] (Minecraft) Done (2.074s)! For help, type "help"
+[22:38:17] [User Authenticator #1/INFO] (Minecraft) UUID of player Sansrus is 989a5a2e-2225-40e0-9db8-8092f70cd264
+[22:38:17] [Server thread/INFO] (Minecraft) Sansrus[/127.0.0.1:61968] logged in with entity id 60 at (24.62775274242271, 70.0, 116.78201365832021)
+[22:38:18] [Server thread/INFO] (Minecraft) Sansrus joined the game
+[22:38:41] [Server thread/INFO] (Minecraft) [STDOUT]: [Sansrus=1]
+[22:38:45] [Server thread/INFO] (Minecraft) [STDOUT]: []
+[22:40:06] [Server thread/INFO] (Minecraft) [STDOUT]: [PVDtime] Добавлен тег PVD для Sansrus

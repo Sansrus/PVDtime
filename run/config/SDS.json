@@ -1,0 +1,60 @@
+{
+  "allowed": {
+    "blocks": [
+      {
+        "id": "iron_bars",
+        "properties": {}
+      },
+      {
+        "id": "bamboo",
+        "properties": {
+          "leaves": [
+            "none",
+            "large"
+          ],
+          "age": [
+            "all"
+          ]
+        }
+      }
+    ],
+    "properties": {},
+    "tags": [
+      {
+        "id": "stairs",
+        "properties": {}
+      },
+      {
+        "id": "walls",
+        "properties": {}
+      },
+      {
+        "id": "c:glass_panes",
+        "properties": {}
+      },
+      {
+        "id": "fences",
+        "properties": {}
+      },
+      {
+        "id": "slabs",
+        "properties": {
+          "type": [
+            "top",
+            "bottom"
+          ]
+        }
+      }
+    ]
+  },
+  "forbidden": {
+    "blocks": [],
+    "properties": {
+      "waterlogged": [
+        "all"
+      ]
+    },
+    "tags": []
+  },
+  "whitelist": true
+}

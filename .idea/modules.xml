@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PVDTime.client.iml" filepath="$PROJECT_DIR$/.idea/modules/PVDTime.client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PVDTime.main.iml" filepath="$PROJECT_DIR$/.idea/modules/PVDTime.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/PVDTime.test.iml" filepath="$PROJECT_DIR$/.idea/modules/PVDTime.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.example.pvdtime.PVDTime.client.iml" filepath="$PROJECT_DIR$/.idea/modules/org.example.pvdtime.PVDTime.client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.example.pvdtime.PVDTime.main.iml" filepath="$PROJECT_DIR$/.idea/modules/org.example.pvdtime.PVDTime.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.example.pvdtime.PVDTime.test.iml" filepath="$PROJECT_DIR$/.idea/modules/org.example.pvdtime.PVDTime.test.iml" />
+    </modules>
+  </component>
+</project>

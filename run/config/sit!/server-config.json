@@ -1,0 +1,51 @@
+{
+  "version": 2.0,
+  "lang": "en_us",
+  "lang-options": "en_us",
+  "keep-active": true,
+  "sit-while-seated": false,
+  "preset-blocks": {
+    "stairs": true,
+    "slabs": true,
+    "carpets": true,
+    "full-blocks": false
+  },
+  "custom-enabled": false,
+  "custom-blocks": [
+    {
+      "block-ids": [],
+      "block-tags": [
+        "#minecraft:campfires"
+      ],
+      "blockstates": [
+        "lit=false"
+      ],
+      "sitting-height": 0.43
+    },
+    {
+      "block-ids": [
+        "!minecraft:oak_log",
+        "minecraft:crimson_stem"
+      ],
+      "block-tags": [
+        "#minecraft:logs"
+      ],
+      "blockstates": [
+        "!axis=y"
+      ],
+      "sitting-height": 1.0
+    },
+    {
+      "block-ids": [],
+      "block-tags": [
+        "#minecraft:beds"
+      ],
+      "blockstates": [
+        "part=foot",
+        "occupied=false"
+      ],
+      "sitting-height": 0.5
+    }
+  ],
+  "blacklisted-blocks": []
+}
