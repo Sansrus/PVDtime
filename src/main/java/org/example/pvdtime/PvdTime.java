@@ -7,7 +7,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,7 +22,6 @@ import java.time.ZoneId;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -306,7 +304,9 @@ public class PvdTime implements ModInitializer {
                                                     JsonObject playerEntry = archiveData.getAsJsonObject(playerName);
                                                     JsonObject weeks = playerEntry.getAsJsonObject("weeks");
                                                     long time = weeks.has(previousWeekId) ? weeks.get(previousWeekId).getAsLong() : 0;
-                                                    playersList.add(new AbstractMap.SimpleEntry<>(playerName, time));
+                                                    if (time > 0) {
+                                                        playersList.add(new AbstractMap.SimpleEntry<>(playerName, time));
+                                                    }
                                                 }
 
                                                 playersList.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
@@ -314,9 +314,7 @@ public class PvdTime implements ModInitializer {
                                                     long minutes = entry.getValue();
                                                     long hours = minutes / 60;
                                                     long remainingMinutes = minutes % 60;
-                                                    if (minutes > 0) {
-                                                        sb.append("\n§a- ").append(entry.getKey()).append(": §e").append(hours).append("ч ").append(remainingMinutes).append("м");
-                                                    }
+                                                    sb.append("\n§a- ").append(entry.getKey()).append(": §e").append(hours).append("ч ").append(remainingMinutes).append("м");
                                                 }
 
                                                 if (playersList.isEmpty()) {

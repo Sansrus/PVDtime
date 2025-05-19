@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "pvdtime",
+  "version": "1.0.4",
+  "name": "PVDTime",
+  "description": "Мод для подсчета ИВД",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "org.example.pvdtime.client.PvdtimeClient"
+    ],
+    "main": [
+      "org.example.pvdtime.PvdTime"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric": "*",
+    "minecraft": "1.21.1"
+  }
+}
