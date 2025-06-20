@@ -1,5 +1,5 @@
 {
-  "requiredMinutes": 1,
+  "requiredMinutes": 15,
   "afkCheckEnabled": true,
-  "afkTimeThreshold": 1
+  "afkTimeThreshold": 3
 }

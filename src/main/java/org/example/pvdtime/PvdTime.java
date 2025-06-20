@@ -37,7 +37,7 @@ public class PvdTime implements ModInitializer {
     private long lastLogSaveTime;
     private long lastWeeklyCheckTime;
     private String lastProcessedWeekId = getCurrentWeekId();
-    private int requiredMinutes = 180; // Время, необходимое для получения статуса PVD
+    private int requiredMinutes = 90; // Время, необходимое для получения статуса PVD
     private final Map<UUID, PlayerPosition> playerPositions = new HashMap<>();
     private int afkTimeThreshold = 5; // Время AFK по умолчанию (минуты)
     private boolean afkCheckEnabled = true; // Переменная для хранения статуса проверки AFK
@@ -262,9 +262,9 @@ public class PvdTime implements ModInitializer {
                                             List<Map.Entry<String, Long>> playersList = new ArrayList<>();
                                             for (String playerName : playtimeData.keySet()) {
                                                 JsonObject playerEntry = playtimeData.getAsJsonObject(playerName);
-                                                if (playerEntry.get("PVD").getAsBoolean()) {
-                                                    JsonObject weeks = playerEntry.getAsJsonObject("weeks");
-                                                    long time = weeks.has(currentWeekId) ? weeks.get(currentWeekId).getAsLong() : 0;
+                                                JsonObject weeks = playerEntry.getAsJsonObject("weeks");
+                                                long time = weeks.has(currentWeekId) ? weeks.get(currentWeekId).getAsLong() : 0;
+                                                if (time > requiredMinutes) {
                                                     playersList.add(new AbstractMap.SimpleEntry<>(playerName, time));
                                                 }
                                             }

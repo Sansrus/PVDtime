@@ -3,4 +3,12 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="21" />
   </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="PVDTime" options="-Xlint:deprecation -AoutRefMapFile=C:\Users\ms928\Documents\temp\PVDTime\build\classes\java\client\client-PVDTime-refmap.json -AdefaultObfuscationEnv=named:intermediary -Aquiet=true -AoutMapFileNamedIntermediary=C:\Users\ms928\Documents\temp\PVDTime\build\loom-cache\mixin-map-net.fabricmc.yarn.1_21_6.1.21.6+build.1-v2.client.tiny -AinMapFileNamedIntermediary=C:\Users\ms928\.gradle\caches\fabric-loom\1.21.6\net.fabricmc.yarn.1_21_6.1.21.6+build.1-v2\mappings.tiny" />
+      <module name="PVDTime.client" options="-Xlint:deprecation -AoutRefMapFile=C:\Users\ms928\Documents\temp\PVDTime\build\classes\java\client\client-PVDTime-refmap.json -AdefaultObfuscationEnv=named:intermediary -Aquiet=true -AoutMapFileNamedIntermediary=C:\Users\ms928\Documents\temp\PVDTime\build\loom-cache\mixin-map-net.fabricmc.yarn.1_21_6.1.21.6+build.1-v2.client.tiny -AinMapFileNamedIntermediary=C:\Users\ms928\.gradle\caches\fabric-loom\1.21.6\net.fabricmc.yarn.1_21_6.1.21.6+build.1-v2\mappings.tiny" />
+      <module name="PVDTime.test" options="-Xlint:deprecation -AoutRefMapFile=C:\Users\ms928\Documents\temp\PVDTime\build\classes\java\test\test-PVDTime-refmap.json -AdefaultObfuscationEnv=named:intermediary -Aquiet=true -AoutMapFileNamedIntermediary=C:\Users\ms928\Documents\temp\PVDTime\build\loom-cache\mixin-map-net.fabricmc.yarn.1_21_6.1.21.6+build.1-v2.test.tiny -AinMapFileNamedIntermediary=C:\Users\ms928\.gradle\caches\fabric-loom\1.21.6\net.fabricmc.yarn.1_21_6.1.21.6+build.1-v2\mappings.tiny" />
+      <module name="org.example.pvdtime.PVDTime.main" options="-Xlint:deprecation -AoutRefMapFile=C:\Users\ms928\Documents\temp\PVDTime\build\classes\java\main\PVDTime-refmap.json -AdefaultObfuscationEnv=named:intermediary -Aquiet=true -AoutMapFileNamedIntermediary=C:\Users\ms928\Documents\temp\PVDTime\build\loom-cache\mixin-map-net.fabricmc.yarn.1_21_6.1.21.6+build.1-v2.main.tiny -AinMapFileNamedIntermediary=C:\Users\ms928\.gradle\caches\fabric-loom\1.21.6\net.fabricmc.yarn.1_21_6.1.21.6+build.1-v2\mappings.tiny" />
+    </option>
+  </component>
 </project>
