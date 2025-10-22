@@ -13,6 +13,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import org.example.pvdtime.api.PvdTimeApi;
 
 import java.io.File;
 import java.io.FileReader;
@@ -60,6 +61,7 @@ public class PvdTime implements ModInitializer {
         NickColorHandler.register();
         loadConfig();
         loadPlaytimeData();
+        initApi();
         lastLogSaveTime = System.currentTimeMillis();
         lastWeeklyCheckTime = lastLogSaveTime;
         ServerTickEvents.START_SERVER_TICK.register(this::onServerTick);
@@ -74,6 +76,10 @@ public class PvdTime implements ModInitializer {
             onPlayerJoin(player);
         });
 
+    }
+
+    public void initApi() {
+        PvdTimeApi.init(this);
     }
 
     private void onServerTick(MinecraftServer server) {
@@ -209,7 +215,7 @@ public class PvdTime implements ModInitializer {
         savePlaytimeData();
     }
 
-    private String getCurrentWeekId() {
+    public String getCurrentWeekId() {
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
         int year = now.get(WeekFields.ISO.weekBasedYear());
         int week = now.get(WeekFields.ISO.weekOfWeekBasedYear());
@@ -727,7 +733,6 @@ public class PvdTime implements ModInitializer {
 
             if (isMoveAfk) {
                 if (maxCount <= 5) {
-                    System.out.println("Выход из AFK по логам");
                     playerIsMovingAFK.remove(id);
                     return false;
                 } else {
@@ -847,5 +852,25 @@ public class PvdTime implements ModInitializer {
         savePlaytimeData();
     }
 
+    // getters / setters для конфигурации
+    public boolean isAfkCheckEnabled() { return afkCheckEnabled; }
+    public void setAfkCheckEnabled(boolean v) { afkCheckEnabled = v; saveConfig(); }
 
+    public int getAfkTimeThreshold() { return afkTimeThreshold; }
+    public void setAfkTimeThreshold(int minutes) { afkTimeThreshold = minutes; saveConfig(); }
+
+    public int getRequiredMinutes() { return requiredMinutes; }
+    public void setRequiredMinutes(int minutes) { requiredMinutes = minutes; saveConfig(); }
+
+    // forcedAfk access (возвращаем копию)
+    public Set<java.util.UUID> getForcedAfk() { return new HashSet<>(forcedAfk); }
+    public void addForcedAfk(java.util.UUID id) { forcedAfk.add(id); }
+    public void removeForcedAfk(java.util.UUID id) { forcedAfk.remove(id); }
+    public void clearForcedAfk() { forcedAfk.clear(); }
+
+    // Возвращаем копию JSON playtimeData (чтобы API мог читать безопасно)
+    public com.google.gson.JsonObject getPlaytimeDataCopy() {
+        // лёгкая глубокая копия через сериализацию (корректно и просто)
+        return com.google.gson.JsonParser.parseString(gson.toJson(playtimeData)).getAsJsonObject();
+    }
 }
