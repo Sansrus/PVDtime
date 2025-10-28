@@ -300,10 +300,6 @@ public class PvdTime implements ModInitializer {
                                             String currentWeekId = getCurrentWeekId();
                                             StringBuilder sb = new StringBuilder("§6Активные PVD игроки и их время:");
 
-                                            // Проверяем, может ли исполнитель видеть дату
-                                            boolean canSeeDate = context.getSource().hasPermissionLevel(4) ||
-                                                    (context.getSource().getEntity() instanceof ServerPlayerEntity execPlayer &&
-                                                            "Sansrus".equals(execPlayer.getGameProfile().getName()));
 
                                             List<Map.Entry<String, Long>> playersList = new ArrayList<>();
                                             for (String playerName : playtimeData.keySet()) {
@@ -332,11 +328,8 @@ public class PvdTime implements ModInitializer {
 
                                                 sb.append("\n§a- ").append(playerName)
                                                         .append(": §e").append(hours).append("ч ").append(remainingMinutes).append("м");
-
-                                                if (canSeeDate) {
-                                                    // белая дата + сброс формата
-                                                    sb.append(" §r§f(").append(lastJoinStr).append(")");
-                                                }
+                                                // белая дата + сброс формата
+                                                sb.append(" §r§f(").append(lastJoinStr).append(")");
                                             }
 
                                             if (playersList.isEmpty()) {
@@ -361,20 +354,13 @@ public class PvdTime implements ModInitializer {
                                                 JsonObject archiveData = JsonParser.parseReader(reader).getAsJsonObject();
                                                 StringBuilder sb = new StringBuilder("§6Время игроков за прошлую неделю:");
 
-                                                // Проверяем, может ли исполнитель видеть дату
-                                                boolean canSeeDate = context.getSource().hasPermissionLevel(4) ||
-                                                        (context.getSource().getEntity() instanceof ServerPlayerEntity execPlayer &&
-                                                                "Sansrus".equals(execPlayer.getGameProfile().getName()));
-
                                                 List<Map.Entry<String, Long>> playersList = new ArrayList<>();
                                                 for (String playerName : archiveData.keySet()) {
                                                     JsonObject playerEntry = archiveData.getAsJsonObject(playerName);
                                                     JsonObject weeks = playerEntry.getAsJsonObject("weeks");
                                                     long time = weeks.has(previousWeekId) ? weeks.get(previousWeekId).getAsLong() : 0;
-                                                    if (time > requiredMinutes) {
-                                                        if (!playerName.equals("Mitciv")) {
-                                                            playersList.add(new AbstractMap.SimpleEntry<>(playerName, time));
-                                                        }
+                                                    if (!playerName.equals("Mitciv")) {
+                                                        playersList.add(new AbstractMap.SimpleEntry<>(playerName, time));
                                                     }
                                                 }
 
@@ -394,10 +380,7 @@ public class PvdTime implements ModInitializer {
 
                                                     sb.append("\n§a- ").append(playerName)
                                                             .append(": §e").append(hours).append("ч ").append(remainingMinutes).append("м");
-
-                                                    if (canSeeDate) {
-                                                        sb.append(" §r§f(").append(lastJoinStr).append(")");
-                                                    }
+                                                    sb.append(" §r§f(").append(lastJoinStr).append(")");
                                                 }
 
                                                 if (playersList.isEmpty()) {
