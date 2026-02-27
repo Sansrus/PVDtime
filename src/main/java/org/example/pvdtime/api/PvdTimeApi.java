@@ -9,11 +9,6 @@ import com.google.gson.JsonObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * PvdTimeApi — статический фасад для доступа к данным PvdTime.
- *
- * Требует, чтобы PvdTime вызвал PvdTimeApi.init(this) на старте.
- */
 public final class PvdTimeApi {
     private static volatile PvdTime instance = null;
 

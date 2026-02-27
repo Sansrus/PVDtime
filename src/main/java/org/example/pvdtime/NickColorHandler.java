@@ -36,23 +36,17 @@ public class NickColorHandler {
     private static final Identifier DIM_END       = World.END.getValue();
     private static final Identifier DIM_SLEEP     = Identifier.of("indefinite", "indefinite");
 
-    // --- Для AFK‑проверки ---
     private static final Map<UUID, Boolean> afkStatus = new HashMap<>();
-
-    // --- Для текущей команды игроков ---
     private static final Map<UUID, String> playerTeams = new HashMap<>();
 
     public static void register() {
-        // — Тик‑обработчик: проверяем AFK и измерение каждый тик
         ServerTickEvents.START_SERVER_TICK.register(server -> {
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                // 1) Обновляем AFK‑статус
                 boolean nowAfk = PvdTime.checkAFKStatus(player);
                 Boolean wasAfk = afkStatus.get(player.getUuid());
                 if (wasAfk == null) wasAfk = false;
 
                 if (nowAfk != wasAfk) {
-                    // Статус изменился
                     if (nowAfk) {
                         player.sendMessage(
                                 Text.literal("Ты начал бездельничать!").formatted(Formatting.GOLD)
@@ -69,7 +63,6 @@ public class NickColorHandler {
                     afkStatus.put(player.getUuid(), nowAfk);
                 }
 
-                // 2) Обновляем команду (и цвет ника) если AFK или измерение изменились
                 try {
                     updatePlayerTeam(player, nowAfk);
                 } catch (Exception e) {
@@ -79,13 +72,11 @@ public class NickColorHandler {
         });
     }
 
-    // --- Обновляет команду и цвет ника под заданный AFK‑статус ---
     private static void updatePlayerTeam(ServerPlayerEntity player, boolean isAfk) {
         String newTeam = getTeamNameByDimensionAndAfk(player, isAfk);
         UUID uuid = player.getUuid();
 
         if (newTeam == null) {
-            // неизвестное измерение → убираем из всех команд
             removeFromAllTeams(player, Objects.requireNonNull(player.getServer()).getScoreboard());
             playerTeams.remove(uuid);
             return;
@@ -98,7 +89,6 @@ public class NickColorHandler {
         }
     }
 
-    // --- Определяет имя команды по измерению и AFK ---
     private static String getTeamNameByDimensionAndAfk(ServerPlayerEntity player, boolean isAfk) {
         Identifier dim = player.getWorld().getRegistryKey().getValue();
         if (dim.equals(DIM_OVERWORLD))   return isAfk ? TEAM_OW_AFK    : TEAM_OW;
@@ -108,7 +98,6 @@ public class NickColorHandler {
         return null;
     }
 
-    // --- Назначает игрока в команду и настраивает её цвет/суффикс ---
     private static void assignPlayerToTeam(ServerPlayerEntity player, String teamName, boolean isAfk) {
         Scoreboard board = Objects.requireNonNull(player.getServer()).getScoreboard();
         Team team = board.getTeam(teamName);
@@ -125,11 +114,11 @@ public class NickColorHandler {
             team.setColor(color);
             team.setPrefix(Text.empty());
             team.setSuffix(Text.empty());
+            team.setShowFriendlyInvisibles(false);
         }
         removeFromAllTeams(player, board);
         board.addScoreHolderToTeam(player.getName().getString(), team);
 
-        // Суффикс: ● только если AFK, и без цвета
         Text suffix = isAfk
                 ? Text.literal(" ●").formatted(Formatting.GRAY)
                 : Text.empty();
@@ -137,7 +126,6 @@ public class NickColorHandler {
         team.setNameTagVisibilityRule(AbstractTeam.VisibilityRule.NEVER);
     }
 
-    // --- Убирает игрока из всех наших команд ---
     private static void removeFromAllTeams(ServerPlayerEntity player, Scoreboard board) {
         String name = player.getName().getString();
         for (String tn : new String[]{

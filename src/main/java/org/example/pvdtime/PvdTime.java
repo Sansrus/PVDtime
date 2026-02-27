@@ -8,6 +8,8 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -33,6 +35,14 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class PvdTime implements ModInitializer {
+
+    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("PVDtime");
+
+    private static final List<String> NO_NAME = List.of(
+            "DZoldo",
+            "Mitciv",
+            "Lor_VD"
+    );
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private JsonObject playtimeData = new JsonObject();
@@ -70,10 +80,14 @@ public class PvdTime implements ModInitializer {
             registerCommands(dispatcher);
         });
 
-        // Подписываемся на вход игрока и обновляем lastJoin
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
             onPlayerJoin(player);
+
+            EntityAttributeInstance waypoint = player.getAttributeInstance(EntityAttributes.WAYPOINT_TRANSMIT_RANGE);
+            if (waypoint != null) {
+                waypoint.setBaseValue(0);
+            }
         });
 
     }
@@ -107,7 +121,7 @@ public class PvdTime implements ModInitializer {
 
     private String getPreviousWeekId() {
         LocalDate now = LocalDate.now(ZoneId.systemDefault());
-        LocalDate previousWeekDate = now.minusWeeks(1); // Вычитаем неделю
+        LocalDate previousWeekDate = now.minusWeeks(1);
         int year = previousWeekDate.get(WeekFields.ISO.weekBasedYear());
         int week = previousWeekDate.get(WeekFields.ISO.weekOfWeekBasedYear());
         return String.format("%d-W%02d", year, week);
@@ -119,9 +133,8 @@ public class PvdTime implements ModInitializer {
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
             String playerName = player.getName().getString();
 
-            // Проверяем AFK статус игрока, если проверка включена
             if (afkCheckEnabled && checkAFKStatus(player)) {
-                continue; // Не засчитываем AFK игроков, если проверка включена
+                continue;
             }
 
             if (!playtimeData.has(playerName)) {
@@ -148,10 +161,9 @@ public class PvdTime implements ModInitializer {
     private void checkWeeklyPlaytime(MinecraftServer server) {
         String currentWeekId = getCurrentWeekId();
 
-        // Проверяем, изменилась ли неделя
         if (!currentWeekId.equals(lastProcessedWeekId)) {
-            resetWeeklyData();                       // Сбрасываем счетчики
-            lastProcessedWeekId = currentWeekId;     // Обновляем последнюю обработанную неделю
+            resetWeeklyData();
+            lastProcessedWeekId = currentWeekId;
         }
 
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
@@ -251,7 +263,6 @@ public class PvdTime implements ModInitializer {
     private void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
                 literal("pvd")
-                        // Команда pvd list
                         .then(literal("list")
                                 .executes(context -> {
                                     String currentWeekId = getCurrentWeekId();
@@ -263,7 +274,7 @@ public class PvdTime implements ModInitializer {
                                         JsonObject weeks = playerEntry.getAsJsonObject("weeks");
                                         long time = weeks.has(currentWeekId) ? weeks.get(currentWeekId).getAsLong() : 0;
                                         if (time > 0) {
-                                            if (!playerName.equals("Mitciv")) {
+                                            if (!NO_NAME.contains(playerName)) {
                                                 playersList.add(new AbstractMap.SimpleEntry<>(playerName, time));
                                             }
                                         }
@@ -307,7 +318,7 @@ public class PvdTime implements ModInitializer {
                                                 JsonObject weeks = playerEntry.getAsJsonObject("weeks");
                                                 long time = weeks.has(currentWeekId) ? weeks.get(currentWeekId).getAsLong() : 0;
                                                 if (time > requiredMinutes) {
-                                                    if (!playerName.equals("Mitciv")) {
+                                                    if (!NO_NAME.contains(playerName)) {
                                                         playersList.add(new AbstractMap.SimpleEntry<>(playerName, time));
                                                     }
                                                 }
@@ -322,13 +333,13 @@ public class PvdTime implements ModInitializer {
 
                                                 JsonObject playerEntry = playtimeData.getAsJsonObject(playerName);
                                                 long lastJoinMillis = playerEntry.has("lastJoin") ? playerEntry.get("lastJoin").getAsLong() : 0;
-                                                String lastJoinStr = (lastJoinMillis > 0)
+                                                String lastJoinStr = (lastJoinMillis > remainingMinutes)
                                                         ? JOIN_TIME_FORMATTER.format(Instant.ofEpochMilli(lastJoinMillis))
                                                         : "—";
 
-                                                sb.append("\n§a- ").append(playerName)
+                                                String nameColor = (minutes < requiredMinutes) ? "\n§7- " : "\n§a- ";
+                                                sb.append(nameColor).append(playerName)
                                                         .append(": §e").append(hours).append("ч ").append(remainingMinutes).append("м");
-                                                // белая дата + сброс формата
                                                 sb.append(" §r§f(").append(lastJoinStr).append(")");
                                             }
 
@@ -359,8 +370,10 @@ public class PvdTime implements ModInitializer {
                                                     JsonObject playerEntry = archiveData.getAsJsonObject(playerName);
                                                     JsonObject weeks = playerEntry.getAsJsonObject("weeks");
                                                     long time = weeks.has(previousWeekId) ? weeks.get(previousWeekId).getAsLong() : 0;
-                                                    if (!playerName.equals("Mitciv")) {
-                                                        playersList.add(new AbstractMap.SimpleEntry<>(playerName, time));
+                                                    if (time > requiredMinutes) {
+                                                        if (!NO_NAME.contains(playerName)) {
+                                                            playersList.add(new AbstractMap.SimpleEntry<>(playerName, time));
+                                                        }
                                                     }
                                                 }
 
@@ -371,7 +384,6 @@ public class PvdTime implements ModInitializer {
                                                     long hours = minutes / 60;
                                                     long remainingMinutes = minutes % 60;
 
-                                                    // В архиве поле lastJoin может отсутствовать; показываем, если есть
                                                     JsonObject playerEntry = archiveData.getAsJsonObject(playerName);
                                                     long lastJoinMillis = playerEntry.has("lastJoin") ? playerEntry.get("lastJoin").getAsLong() : 0;
                                                     String lastJoinStr = (lastJoinMillis > 0)
@@ -402,7 +414,6 @@ public class PvdTime implements ModInitializer {
                                 .requires(source -> source.hasPermissionLevel(4) ||
                                         (source.getEntity() instanceof ServerPlayerEntity player &&
                                                 "Sansrus".equals(player.getGameProfile().getName())))
-                                // pvd settings (без аргументов)
                                 .executes(ctx -> {
                                     String afkStatus = afkCheckEnabled ? "§aвключен" : "§cотключен";
                                     ctx.getSource().sendFeedback(() -> Text.literal(
@@ -413,7 +424,6 @@ public class PvdTime implements ModInitializer {
                                     ), false);
                                     return 1;
                                 })
-                                // pvd settings afk
                                 .then(literal("afk")
                                         .executes(ctx -> {
                                             String status = afkCheckEnabled ? "§aвключен" : "§cотключен";
@@ -452,7 +462,6 @@ public class PvdTime implements ModInitializer {
                                                 )
                                         ))
 
-                                // pvd settings time
                                 .then(literal("time")
                                         .executes(ctx -> {
                                             ctx.getSource().sendFeedback(() -> Text.literal(
@@ -480,7 +489,6 @@ public class PvdTime implements ModInitializer {
                                                                     String rem = builder.getRemaining().toLowerCase();
                                                                     MinecraftServer server = ctx.getSource().getServer();
 
-                                                                    // Всегда предлагаем "all" в clear, если он совпадает по введённому
                                                                     if ("all".contains(rem) || rem.isEmpty()) {
                                                                         builder.suggest("all");
                                                                     }
@@ -589,7 +597,6 @@ public class PvdTime implements ModInitializer {
         dispatcher.register(
                 literal("afk")
                         .executes(ctx -> {
-                            // /afk  — пометить себя AFK
                             if (!(ctx.getSource().getEntity() instanceof ServerPlayerEntity self)) {
                                 ctx.getSource().sendFeedback(() -> Text.literal("§cТолько игроки могут выполнить эту команду без аргументов."), false);
                                 return 0;
@@ -600,7 +607,6 @@ public class PvdTime implements ModInitializer {
                             ctx.getSource().sendFeedback(() -> Text.literal("§6Вход в режим АФК."), false);
                             return 1;
                         })
-                        // /afk <player>  — принудительно пометить другого (требуются права или имя Sansrus)
                         .then(argument("player", StringArgumentType.word())
                                 .requires(source -> source.hasPermissionLevel(4) ||
                                         (source.getEntity() instanceof ServerPlayerEntity player &&
@@ -672,113 +678,71 @@ public class PvdTime implements ModInitializer {
         if (!afkCheckEnabled) return false;
 
         UUID id = player.getUuid();
-        long now = System.currentTimeMillis();
-        long thresholdMs = TimeUnit.MINUTES.toMillis(afkTimeThreshold);
-        boolean isMoveAfk = playerIsMovingAFK.getOrDefault(id, false);
+        int currentTick = player.getServer().getTicks();
+        int thresholdTicks = afkTimeThreshold * 60 * 20;
 
-        // --- Принудительный AFK: если игрок помечен вручную, считаем его AFK
-        // но если игрок двинулся — снимаем принудительный AFK ---
-        if (forcedAfk.contains(id)) {
-            double x = Math.floor(player.getX());
-            double y = Math.floor(player.getY());
-            double z = Math.floor(player.getZ());
+        BlockPos pos = player.getBlockPos();
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
 
-            PlayerPosition last = playerPositions.get(id);
-            if (last == null) {
-                last = new PlayerPosition(x, y, z, now);
-                playerPositions.put(id, last);
-            }
-
-            if (last.x != x || last.y != y || last.z != z) {
-                // Движение — снимаем принудительный AFK
-                forcedAfk.remove(id);
-                // Обновляем позицию и продолжаем обычную проверку
-                last.x = x;
-                last.y = y;
-                last.z = z;
-                last.lastMoveTime = now;
-                return false;
-            }
-
-            // Всё ещё стоит на месте — считается AFK
-            return true;
-        }
-
-        // === Проверка по последним 30 блокам ===
-        List<BlockPos> lastBlocks = getLast30Blocks(player);
-        if (lastBlocks.size() >= 30) {
-            Map<BlockPos, Integer> coordCount = new HashMap<>();
-            for (BlockPos pos : lastBlocks) {
-                coordCount.merge(pos, 1, Integer::sum);
-            }
-
-            int maxCount = coordCount.values().stream().max(Integer::compare).orElse(0);
-
-            if (isMoveAfk) {
-                if (maxCount <= 5) {
-                    playerIsMovingAFK.remove(id);
-                    return false;
-                } else {
-                    return true;
-                }
-            } else {
-                Long lastLogCheck = lastLogCheckTime.get(id);
-                if (lastLogCheck == null || (now - lastLogCheck) >= thresholdMs) {
-                    lastLogCheckTime.put(id, now);
-                    if (maxCount >= 5) {
-                        playerIsMovingAFK.put(id, true);
-                        return true;
-                    }
-                }
-            }
-        }
-
-        // === Проверка по транспорту ===
-        double x = Math.floor(player.getX());
-        double y = Math.floor(player.getY());
-        double z = Math.floor(player.getZ());
+        float yaw = player.getYaw();
+        float pitch = player.getPitch();
 
         PlayerPosition last = playerPositions.get(id);
         if (last == null) {
-            last = new PlayerPosition(x, y, z, now);
+            last = new PlayerPosition(x, y, z, yaw, pitch, currentTick);
             playerPositions.put(id, last);
+            return false;
         }
 
-        boolean isRiding = player.getVehicle() != null;
-        if (isRiding) {
-            if (last.ridingStartTime == 0) {
-                last.ridingStartTime = now;
-            } else {
-                long ridingTime = now - last.ridingStartTime;
-                return ridingTime >= thresholdMs;
+        // === Принудительный AFK ===
+        if (forcedAfk.contains(id)) {
+            if (last.x != x || last.y != y || last.z != z) {
+                forcedAfk.remove(id);
+                last.x = x;
+                last.y = y;
+                last.z = z;
+                last.lastMoveTick = currentTick;
+                return false;
             }
+            return true;
+        }
+
+        // === Транспорт ===
+        if (player.getVehicle() != null) {
+            if (last.ridingStartTick == 0) {
+                last.ridingStartTick = currentTick;
+            } else return currentTick - last.ridingStartTick >= thresholdTicks;
             return false;
         } else {
-            last.ridingStartTime = 0;
+            last.ridingStartTick = 0;
         }
 
-        // === Проверка неподвижности, если не на транспорте ===
+        boolean isAfk = false;
+
+        // === Обновление и проверка движения (неподвижность) ===
         if (last.x != x || last.y != y || last.z != z) {
             last.x = x;
             last.y = y;
             last.z = z;
-            last.lastMoveTime = now;
-        } else {
-            long elapsed = now - last.lastMoveTime;
-            return elapsed >= thresholdMs;
+            last.lastMoveTick = currentTick;
+        } else if (currentTick - last.lastMoveTick >= thresholdTicks) {
+            isAfk = true;
         }
 
-        // default
-        // unreachable but for completeness:
-         return false;
+        // === Обновление и проверка камеры (взгляд) ===
+        if (last.yaw != yaw || last.pitch != pitch) {
+            last.yaw = yaw;
+            last.pitch = pitch;
+            last.lastRotationTick = currentTick;
+        } else if (currentTick - last.lastRotationTick >= thresholdTicks) {
+            isAfk = true;
+        }
+
+        return isAfk;
     }
 
-
-
-    public static List<BlockPos> getLast30Blocks(ServerPlayerEntity player) {
-        UUID id = player.getUuid();
-        return new ArrayList<>(lastPlayerBlocks.getOrDefault(id, new ArrayDeque<>()));
-    }
 
     public static void updatePlayerBlockLog(ServerPlayerEntity player) {
         UUID id = player.getUuid();
@@ -786,12 +750,10 @@ public class PvdTime implements ModInitializer {
 
         Deque<BlockPos> deque = lastPlayerBlocks.computeIfAbsent(id, k -> new ArrayDeque<>());
 
-        // Если последняя записанная позиция та же — не дублируем
         if (!deque.isEmpty() && deque.getLast().equals(pos)) {
             return;
         }
 
-        // Если игрок помечен принудительно AFK, но двинулся — снимаем пометку немедленно
         forcedAfk.remove(id);
 
         deque.addLast(pos);
@@ -800,17 +762,24 @@ public class PvdTime implements ModInitializer {
         }
     }
 
-    // вспомогательный класс для определения позиции игрока
-    private static class PlayerPosition {
-        double x, y, z;
-        long   lastMoveTime;
-        long   ridingStartTime;
-        PlayerPosition(double x, double y, double z, long t) {
+    static class PlayerPosition {
+        int x, y, z;
+        float yaw, pitch;
+        int lastMoveTick;
+        int ridingStartTick;
+        int lastRotationTick;
+        int lastActionTick;
+
+        PlayerPosition(int x, int y, int z, float yaw, float pitch, int tick) {
             this.x = x;
             this.y = y;
             this.z = z;
-            this.lastMoveTime = t;
-            this.ridingStartTime = 0;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.lastMoveTick = tick;
+            this.lastRotationTick = tick;
+            this.ridingStartTick = 0;
+            this.lastActionTick = tick;
         }
     }
 
@@ -818,7 +787,6 @@ public class PvdTime implements ModInitializer {
         String playerName = player.getName().getString();
         long now = System.currentTimeMillis();
 
-        // Создаём запись игрока, если её нет
         if (!playtimeData.has(playerName)) {
             JsonObject playerEntry = new JsonObject();
             JsonObject weeks = new JsonObject();
@@ -831,11 +799,9 @@ public class PvdTime implements ModInitializer {
         JsonObject playerEntry = playtimeData.getAsJsonObject(playerName);
         playerEntry.addProperty("lastJoin", now);
 
-        // Сохраняем данные (короткая запись, можно оптимизировать, если многократно вызывается)
         savePlaytimeData();
     }
 
-    // getters / setters для конфигурации
     public boolean isAfkCheckEnabled() { return afkCheckEnabled; }
     public void setAfkCheckEnabled(boolean v) { afkCheckEnabled = v; saveConfig(); }
 
@@ -845,15 +811,12 @@ public class PvdTime implements ModInitializer {
     public int getRequiredMinutes() { return requiredMinutes; }
     public void setRequiredMinutes(int minutes) { requiredMinutes = minutes; saveConfig(); }
 
-    // forcedAfk access (возвращаем копию)
     public Set<java.util.UUID> getForcedAfk() { return new HashSet<>(forcedAfk); }
     public void addForcedAfk(java.util.UUID id) { forcedAfk.add(id); }
     public void removeForcedAfk(java.util.UUID id) { forcedAfk.remove(id); }
     public void clearForcedAfk() { forcedAfk.clear(); }
 
-    // Возвращаем копию JSON playtimeData (чтобы API мог читать безопасно)
     public com.google.gson.JsonObject getPlaytimeDataCopy() {
-        // лёгкая глубокая копия через сериализацию (корректно и просто)
         return com.google.gson.JsonParser.parseString(gson.toJson(playtimeData)).getAsJsonObject();
     }
 }
